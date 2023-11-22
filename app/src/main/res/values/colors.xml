@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="purple_200">#013BBA</color>
+    <color name="purple_500">#013BBA</color>
+    <color name="purple_700">#013BBA</color>
+    <color name="teal_288">#FF63DAC5</color>
+    <color name="teal_788">#FF018786</color>
+    <color name="back_color">#132530</color>
+    <color name="bot_back_color">#263757</color>
+    <color name="user_back_color">#6965FF</color>
+    <color name="fab_color">#6B6AFF</color>
+    <color name="stausbarcolor">#36c5fe</color>
+</resources>

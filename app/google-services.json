@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "732761681776",
+    "project_id": "sspgcek",
+    "storage_bucket": "sspgcek.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:732761681776:android:3fc92af548bd41ed93a9b5",
+        "android_client_info": {
+          "package_name": "com.example.sspgcek"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDznZ7VG2iQuUWJ3XeBlwtLvseLr28VN-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

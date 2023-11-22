@@ -1,0 +1,86 @@
+package com.example.sspgcek;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
+
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+import com.example.sspgcek.Adapters.ChatAdapter;
+import com.example.sspgcek.Models.ChatsModel;
+import com.example.sspgcek.databinding.ActivityMainBinding;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    ActivityMainBinding binding;
+    private final String USER_KEY="user";
+    private final String BOT_KEY="bot";
+    ArrayList<ChatsModel> list;
+    ChatAdapter chatAdapter;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding=ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.stausbarcolor));
+        }
+        String android_device_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference= firebaseDatabase.getReference(android_device_id);
+
+//        if (! Python.isStarted()) {
+//            Python.start(new AndroidPlatform(getApplicationContext()));
+//        }
+
+        list=new ArrayList<>();
+        chatAdapter=new ChatAdapter(list,getApplicationContext());
+
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        binding.chats.setLayoutManager(linearLayoutManager);
+        binding.chats.setAdapter(chatAdapter);
+
+        binding.send.setOnClickListener(v -> {
+            String userinput=binding.userquery.getText().toString();
+            databaseReference.setValue(userinput);
+            if(userinput.isEmpty()){
+                Toast.makeText(getApplicationContext(),"Query can't be blank",Toast.LENGTH_SHORT).show();
+                return;
+            }
+//            getResult(userinput);
+            binding.userquery.setText("");
+        });
+    }
+
+    private void getResult(String userinput) {
+        list.add(new ChatsModel(userinput,USER_KEY));
+        chatAdapter.notifyItemInserted(list.size()-1);
+
+        Python python=Python.getInstance();
+        final PyObject pyObject=python.getModule("res");
+
+        PyObject object=null;
+        object=pyObject.callAttr("backend",userinput);
+
+        Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
+    }
+
+}
