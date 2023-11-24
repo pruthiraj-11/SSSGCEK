@@ -1,8 +1,5 @@
 package com.example.sspgcek;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -10,9 +7,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
 import com.example.sspgcek.Adapters.ChatAdapter;
 import com.example.sspgcek.Models.ChatsModel;
 import com.example.sspgcek.databinding.ActivityMainBinding;
@@ -67,6 +67,13 @@ public class MainActivity extends AppCompatActivity {
             }
 //            getResult(userinput);
             binding.userquery.setText("");
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
         });
     }
 
