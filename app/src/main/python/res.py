@@ -17,8 +17,8 @@ import ssl
 
 
 def backend(txt):
-    url = "https://jsonkeeper.com/b/2MQ1"
-    context = ssl._create_unverified_context()b
+    url = "https://jsonkeeper.com/b/XE5X"
+    context = ssl._create_unverified_context()
     response = urlopen(url, context=context)
     data1 = json.load(response)
     tags = []
@@ -50,9 +50,9 @@ def backend(txt):
     x = Dense(output_length, activation="softmax")(x)
     model = Model(i, x)
     model.compile(loss="sparse_categorical_crossentropy", optimizer='adam', metrics=['accuracy'])
-    # train=model.fit(x_train,y_train,epochs=200)
+    model.fit(x_train,y_train,epochs=200)
     texts_p = []
-    prediction_input = txt
+    prediction_input = str(txt)
     prediction_input = [letters.lower() for letters in prediction_input if
                         letters not in string.punctuation]
     prediction_input = ''.join(prediction_input)

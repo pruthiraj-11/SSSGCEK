@@ -13,9 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.example.sspgcek.Adapters.ChatAdapter;
 import com.example.sspgcek.Models.ChatsModel;
 import com.example.sspgcek.databinding.ActivityMainBinding;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     ChatAdapter chatAdapter;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+    String API_KEY="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference= firebaseDatabase.getReference(android_device_id);
 
-//        if (! Python.isStarted()) {
-//            Python.start(new AndroidPlatform(getApplicationContext()));
-//        }
+        if (! Python.isStarted()) {
+            Python.start(new AndroidPlatform(getApplicationContext()));
+        }
 
         list=new ArrayList<>();
         chatAdapter=new ChatAdapter(list,getApplicationContext());
@@ -65,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Query can't be blank",Toast.LENGTH_SHORT).show();
                 return;
             }
-//            getResult(userinput);
+            getResult(userinput);
+//            translateText(userinput);
             binding.userquery.setText("");
         });
 
@@ -88,6 +94,19 @@ public class MainActivity extends AppCompatActivity {
         object=pyObject.callAttr("backend",userinput);
 
         Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
+    }
+
+    private void translateText(String input){
+        String targetLang = "or";
+        Translate translate = TranslateOptions.newBuilder().setApiKey(API_KEY).build().getService();
+        Translation translation = translate.translate(input, Translate.TranslateOption.targetLanguage(targetLang));
+        String translatedText = translation.getTranslatedText();
+        removePunctuationAndLowercase(translatedText);
+    }
+
+    private void removePunctuationAndLowercase(String sentence) {
+        String withoutPunctuation = sentence.replaceAll("[^a-zA-Z0-9\\s]", "");
+        getResult(withoutPunctuation.toLowerCase());
     }
 
 }
