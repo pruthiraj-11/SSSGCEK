@@ -1,6 +1,5 @@
 package com.example.sspgcek;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Window;
