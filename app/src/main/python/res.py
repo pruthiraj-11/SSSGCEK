@@ -14,7 +14,9 @@ from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 from urllib.request import urlopen
 import ssl
-
+import joblib
+import pickle
+from tensorflow import keras
 
 def backend(txt):
     url = "https://jsonkeeper.com/b/XE5X"
@@ -39,18 +41,12 @@ def backend(txt):
     train = tokenizer.texts_to_sequences(data['inputs'])
     x_train = pad_sequences(train)
     le = LabelEncoder()
-    y_train = le.fit_transform(data['tags'])
     input_shape = x_train.shape[1]
-    vocabulary = len(tokenizer.word_index)
+    le.fit_transform(data['tags'])
     output_length = le.classes_.shape[0]
-    i = Input(shape=(input_shape,))
-    x = Embedding(vocabulary + 1, 10)(i)
-    x = LSTM(10, return_sequences=True)(x)
-    x = Flatten()(x)
-    x = Dense(output_length, activation="softmax")(x)
-    model = Model(i, x)
-    model.compile(loss="sparse_categorical_crossentropy", optimizer='adam', metrics=['accuracy'])
-    model.fit(x_train,y_train,epochs=200)
+    url1="https://firebasestorage.googleapis.com/v0/b/sspgcek.appspot.com/o/model.pkl?alt=media&token=dfb10431-1672-46d3-93ea-74183f68b627"
+    response1 = urlopen(url1, context=context)
+    model = pickle.load(response1)
     texts_p = []
     prediction_input = str(txt)
     prediction_input = [letters.lower() for letters in prediction_input if

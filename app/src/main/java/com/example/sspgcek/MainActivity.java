@@ -92,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
         object=pyObject.callAttr("backend",userinput);
 
         Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
+
+        list.add(new ChatsModel(object.toString(),BOT_KEY));
+        chatAdapter.notifyItemInserted(list.size()-1);
     }
 
     private void translateText(String input){
