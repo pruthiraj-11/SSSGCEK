@@ -83,7 +83,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void getResult(String userinput) {
         list.add(new ChatsModel(userinput,USER_KEY));
-        chatAdapter.notifyItemInserted(list.size()-1);
+        if(list.size()==1){
+            chatAdapter.notifyDataSetChanged();
+        } else {
+            chatAdapter.notifyItemInserted(list.size()-1);
+        }
 
         Python python=Python.getInstance();
         final PyObject pyObject=python.getModule("res");
@@ -94,7 +98,11 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
 
         list.add(new ChatsModel(object.toString(),BOT_KEY));
-        chatAdapter.notifyItemInserted(list.size()-1);
+        if(list.size()==1){
+            chatAdapter.notifyDataSetChanged();
+        } else {
+            chatAdapter.notifyItemInserted(list.size()-1);
+        }
     }
 
     private void translateText(String input){
