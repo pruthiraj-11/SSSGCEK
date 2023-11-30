@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
 //            translateText(userinput);
             binding.userquery.setText("");
         });
-
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
