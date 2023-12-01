@@ -5,6 +5,7 @@ import json
 import nltk
 import string
 import random
+from tensorflow import keras
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.layers import Input, Embedding, LSTM, Dense, GlobalMaxPooling1D, Flatten
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -16,7 +17,6 @@ from urllib.request import urlopen
 import ssl
 import joblib
 import pickle
-from tensorflow import keras
 
 def backend(txt):
     url = "https://jsonkeeper.com/b/XE5X"

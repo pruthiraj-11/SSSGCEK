@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             chatAdapter.notifyItemInserted(list.size()-1);
         }
-
+/yytyyyt
         Python python=Python.getInstance();
         final PyObject pyObject=python.getModule("res");
 
