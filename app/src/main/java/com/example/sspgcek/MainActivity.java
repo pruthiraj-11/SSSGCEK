@@ -1,5 +1,7 @@
 package com.example.sspgcek;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Window;
@@ -27,8 +29,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    private final String USER_KEY="user";
-    private final String BOT_KEY="bot";
     ArrayList<ChatsModel> list;
     ChatAdapter chatAdapter;
     FirebaseDatabase firebaseDatabase;
@@ -47,6 +47,15 @@ public class MainActivity extends AppCompatActivity {
         window.setStatusBarColor(this.getResources().getColor(R.color.stausbarcolor));
 
         String android_device_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        try {
+            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
+            Object value = applicationInfo.metaData.get("apikey");
+            if (value != null) {
+                API_KEY = value.toString();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(MainActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+        }
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference= firebaseDatabase.getReference(android_device_id);
 
@@ -81,7 +90,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getResult(String userinput) {
-        list.add(new ChatsModel(userinput,USER_KEY));
+        String USER_KEY = "user";
+        list.add(new ChatsModel(userinput, USER_KEY));
         if(list.size()==1){
             chatAdapter.notifyDataSetChanged();
         } else {
@@ -95,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
 
-        list.add(new ChatsModel(object.toString(),BOT_KEY));
+        String BOT_KEY = "bot";
+        list.add(new ChatsModel(object.toString(), BOT_KEY));
         if(list.size()==1){
             chatAdapter.notifyDataSetChanged();
         } else {

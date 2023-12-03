@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -89,13 +91,22 @@ public class SigninActivity extends AppCompatActivity {
 
         final String[] passwordResetEmail = new String[1];
         final View[] view1 = {null};
+        String default_web_client_id="";
         auth=FirebaseAuth.getInstance();
         dialog=new ProgressDialog(SigninActivity.this);
         dialog.setTitle("Login");
         dialog.setMessage("Login to your account");
-
-        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+        try {
+            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
+            Object value = applicationInfo.metaData.get("defaultwebclientidValue");
+            if (value != null) {
+                default_web_client_id = value.toString();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(SigninActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+        }
+        GoogleSignInOptions googleSignInOptions =  new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(default_web_client_id)
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(SigninActivity.this, googleSignInOptions);
