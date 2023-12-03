@@ -1,14 +1,20 @@
 package com.example.sspgcek;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.sspgcek.databinding.ActivitySigninBinding;
@@ -32,6 +38,7 @@ public class SigninActivity extends AppCompatActivity {
     FirebaseAuth auth;
     GoogleSignInClient googleSignInClient;
     FirebaseAuth firebaseAuth;
+    EditText editTextemail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +50,39 @@ public class SigninActivity extends AppCompatActivity {
         animationDrawable.setExitFadeDuration(3000);
         animationDrawable.start();
 
+        ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent data = result.getData();
+                            Task<GoogleSignInAccount> signInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+                            if (signInAccountTask.isSuccessful()) {
+                                Toast.makeText(SigninActivity.this,"Sign in successful",Toast.LENGTH_SHORT).show();
+                                try {
+                                    GoogleSignInAccount googleSignInAccount = signInAccountTask.getResult(ApiException.class);
+                                    if (googleSignInAccount != null) {
+                                        AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
+                                        firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(SigninActivity.this, task -> {
+                                            if (task.isSuccessful()) {
+                                                startActivity(new Intent(SigninActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                                Toast.makeText(SigninActivity.this,"Firebase authentication successful", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(SigninActivity.this,"Authentication Failed :" + Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                } catch (ApiException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                });
+
+        final String[] passwordResetEmail = new String[1];
+        final View[] view1 = {null};
         auth=FirebaseAuth.getInstance();
         dialog=new ProgressDialog(SigninActivity.this);
         dialog.setTitle("Login");
@@ -56,6 +96,7 @@ public class SigninActivity extends AppCompatActivity {
         binding.gin.setOnClickListener((View.OnClickListener) view -> {
             Intent intent = googleSignInClient.getSignInIntent();
             startActivityForResult(intent, 74);
+//            activityResultLauncher.launch(intent);
         });
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -93,7 +134,9 @@ public class SigninActivity extends AppCompatActivity {
 
         binding.forgotpasssword.setOnClickListener(v -> {
             if (binding.viewStub.getParent()!=null) {
-                binding.viewStub.inflate();
+                view1[0] =binding.viewStub.inflate();
+                editTextemail=view1[0].findViewById(R.id.mailfieldpasswordreset);
+                passwordResetEmail[0] =editTextemail.getText().toString().trim();
             } else {
                 binding.viewStub.setVisibility(View.VISIBLE);
             }
