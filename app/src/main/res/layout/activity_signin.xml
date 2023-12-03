@@ -128,6 +128,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/forgotpasssword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -141,6 +142,8 @@
 
     <ViewStub
         android:id="@+id/viewStub"
+        android:inflatedId="@+id/password_reset"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout="@layout/password_reset_layout"/>
 </LinearLayout>

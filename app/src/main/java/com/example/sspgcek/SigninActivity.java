@@ -91,10 +91,23 @@ public class SigninActivity extends AppCompatActivity {
                     });
         });
 
+        binding.forgotpasssword.setOnClickListener(v -> {
+            if (binding.viewStub.getParent()!=null) {
+                binding.viewStub.inflate();
+            } else {
+                binding.viewStub.setVisibility(View.VISIBLE);
+            }
+        });
+
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                finish();
+                if (binding.viewStub.getVisibility()==View.VISIBLE) {
+                    binding.viewStub.setVisibility(View.GONE);
+                    finish();
+                } else {
+                    finish();
+                }
             }
         });
     }
