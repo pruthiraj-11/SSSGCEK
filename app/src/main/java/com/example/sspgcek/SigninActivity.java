@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,8 +14,10 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sspgcek.databinding.ActivitySigninBinding;
@@ -23,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,6 +43,7 @@ public class SigninActivity extends AppCompatActivity {
     GoogleSignInClient googleSignInClient;
     FirebaseAuth firebaseAuth;
     EditText editTextemail;
+    TextView closeTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +55,7 @@ public class SigninActivity extends AppCompatActivity {
         animationDrawable.setExitFadeDuration(3000);
         animationDrawable.start();
 
+        closeTextView=null;
         ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -136,11 +142,18 @@ public class SigninActivity extends AppCompatActivity {
             if (binding.viewStub.getParent()!=null) {
                 view1[0] =binding.viewStub.inflate();
                 editTextemail= (EditText) view1[0].findViewById(R.id.mailfieldpasswordreset);
-                passwordResetEmail[0] =editTextemail.getText().toString().trim();
+                closeTextView= (TextView) view1[0].findViewById(R.id.backbtn);
+                passwordReset(passwordResetEmail);
             } else {
                 binding.viewStub.setVisibility(View.VISIBLE);
+                editTextemail= (EditText) view1[0].findViewById(R.id.mailfieldpasswordreset);
+                passwordReset(passwordResetEmail);
             }
         });
+
+        if (closeTextView!=null) {
+            binding.viewStub.setVisibility(View.GONE);
+        }
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -153,6 +166,24 @@ public class SigninActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void passwordReset(String[] passwordResetEmail){
+        passwordResetEmail[0] =editTextemail.getText().toString().trim();
+        if (TextUtils.isEmpty(passwordResetEmail[0])) {
+            Toast.makeText(getApplication(), "Please fill out this field.", Toast.LENGTH_SHORT).show();
+        } else {
+            auth.sendPasswordResetEmail(passwordResetEmail[0]).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplication(), "Email sent", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getApplication(), "Failed to send reset email!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
     }
 
     @Override
