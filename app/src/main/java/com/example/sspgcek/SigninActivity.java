@@ -135,7 +135,7 @@ public class SigninActivity extends AppCompatActivity {
         binding.forgotpasssword.setOnClickListener(v -> {
             if (binding.viewStub.getParent()!=null) {
                 view1[0] =binding.viewStub.inflate();
-                editTextemail=view1[0].findViewById(R.id.mailfieldpasswordreset);
+                editTextemail= (EditText) view1[0].findViewById(R.id.mailfieldpasswordreset);
                 passwordResetEmail[0] =editTextemail.getText().toString().trim();
             } else {
                 binding.viewStub.setVisibility(View.VISIBLE);
