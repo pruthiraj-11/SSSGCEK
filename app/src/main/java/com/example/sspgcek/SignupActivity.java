@@ -43,9 +43,9 @@ public class SignupActivity extends AppCompatActivity {
         dialog.setMessage("We are creating your account");
         binding.sup.setOnClickListener(v -> {
             if(Objects.requireNonNull(binding.mailfield.getText()).toString().isEmpty()&& Objects.requireNonNull(binding.passfield.getText()).toString().isEmpty()&& Objects.requireNonNull(binding.uname.getText()).toString().isEmpty()){
-                binding.uname.setError("Can't be blank");
-                binding.mailfield.setError("Can't be blank");
-                binding.passfield.setError("Can't be blank");
+                binding.uname.setError("Please fill out this field.");
+                binding.mailfield.setError("Please fill out this field.");
+                binding.passfield.setError("Please fill out this field.");
             } else {
                 dialog.show();
                 String email = String.valueOf(binding.mailfield.getText());

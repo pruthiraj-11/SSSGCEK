@@ -70,11 +70,11 @@ public class SigninActivity extends AppCompatActivity {
 
         binding.signinbtn.setOnClickListener(v -> {
             if(Objects.requireNonNull(binding.gmailfield.getText()).toString().isEmpty()){
-                binding.gmailfield.setError("Enter your email");
+                binding.gmailfield.setError("Please fill out this field.");
                 return;
             }
             if(Objects.requireNonNull(binding.signinpass.getText()).toString().isEmpty()){
-                binding.signinpass.setError("Enter your password");
+                binding.signinpass.setError("Please fill out this field.");
                 return;
             }
             dialog.show();
