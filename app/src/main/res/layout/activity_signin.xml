@@ -30,18 +30,18 @@
             android:id="@+id/filledTextField91"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="10dp"
             android:hint="Enter E-mail"
             app:endIconMode="clear_text"
             app:endIconTint="@color/mywacolor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/gmailfield"
-                android:inputType="textEmailAddress"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -56,9 +56,9 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/signinpass"
-                android:inputType="textPassword"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -131,11 +131,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:textColor="#040303" />
+            android:text="Forgot Password?"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
     </LinearLayout>
 
-
+    <ViewStub
+        android:id="@+id/viewStub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>
