@@ -18,4 +18,8 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+# Also, for faster builds with proguard, you can exclude crashlytics by adding the following code -
+-keep class com.crashlytics.** { *; }
+-dontwarn com.crashlytics.**
