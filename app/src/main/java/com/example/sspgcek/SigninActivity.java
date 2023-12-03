@@ -161,7 +161,7 @@ public class SigninActivity extends AppCompatActivity {
         if (requestCode == 74) {
             Task<GoogleSignInAccount> signInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
             if (signInAccountTask.isSuccessful()) {
-                Toast.makeText(SigninActivity.this,"Google sign in successful",Toast.LENGTH_SHORT).show();
+                Toast.makeText(SigninActivity.this,"Sign in successful",Toast.LENGTH_SHORT).show();
                 try {
                     GoogleSignInAccount googleSignInAccount = signInAccountTask.getResult(ApiException.class);
                     if (googleSignInAccount != null) {
