@@ -11,13 +11,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +56,11 @@ public class SigninActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding= ActivitySigninBinding.inflate(getLayoutInflater());
-        setContentView(R.layout.activity_signin);
+        setContentView(binding.getRoot());
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
 
         AnimationDrawable animationDrawable = (AnimationDrawable)binding.signinlayout.getBackground();
         animationDrawable.setEnterFadeDuration(1500);
@@ -74,7 +84,7 @@ public class SigninActivity extends AppCompatActivity {
                                         firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(SigninActivity.this, task -> {
                                             if (task.isSuccessful()) {
                                                 startActivity(new Intent(SigninActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                                                Toast.makeText(SigninActivity.this,"Firebase authentication successful", Toast.LENGTH_SHORT).show();
+//                                                Toast.makeText(SigninActivity.this,"Firebase authentication successful", Toast.LENGTH_SHORT).show();
                                             } else {
                                                 Toast.makeText(SigninActivity.this,"Authentication Failed :" + Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
                                             }
@@ -95,17 +105,17 @@ public class SigninActivity extends AppCompatActivity {
         dialog=new ProgressDialog(SigninActivity.this);
         dialog.setTitle("Login");
         dialog.setMessage("Login to your account");
-        try {
-            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
-            Object value = applicationInfo.metaData.get("defaultwebclientidValue");
-            if (value != null) {
-                default_web_client_id = value.toString();
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Toast.makeText(SigninActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
-        }
+//        try {
+//            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
+//            Object value = applicationInfo.metaData.get("defaultwebclientidValue");
+//            if (value != null) {
+//                default_web_client_id = value.toString();
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            Toast.makeText(SigninActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+//        }
         GoogleSignInOptions googleSignInOptions =  new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(default_web_client_id)
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(SigninActivity.this, googleSignInOptions);
@@ -118,6 +128,7 @@ public class SigninActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null) {
             startActivity(new Intent(SigninActivity.this,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            finish();
         }
 
         binding.newacc.setOnClickListener(v -> {
@@ -139,8 +150,8 @@ public class SigninActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         dialog.dismiss();
                         if(task.isSuccessful()){
-                            Intent intent=new Intent(SigninActivity.this,MainActivity.class);
-                            startActivity(intent);
+                            startActivity(new Intent(SigninActivity.this,MainActivity.class));
+                            finish();
                         }
                         else {
                             Toast.makeText(SigninActivity.this, Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
@@ -210,7 +221,7 @@ public class SigninActivity extends AppCompatActivity {
                         firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(this, task -> {
                             if (task.isSuccessful()) {
                                 startActivity(new Intent(SigninActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                                Toast.makeText(SigninActivity.this,"Firebase authentication successful", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(SigninActivity.this,"Firebase authentication successful", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(SigninActivity.this,"Authentication Failed :" + Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
                             }
@@ -221,5 +232,22 @@ public class SigninActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)ev.getRawX(), (int)ev.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }

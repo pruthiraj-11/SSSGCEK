@@ -33,7 +33,7 @@ android {
         }
 
         python {
-            buildPython "C:/Program Files/Python311/python.exe"
+            buildPython "C:/Program Files/Python38/python.exe"
         }
 
         python {
@@ -53,10 +53,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            firebaseCrashlytics {
-                mappingFileUploadEnabled false
-            }
         }
     }
     buildFeatures{

@@ -47,15 +47,15 @@ public class MainActivity extends AppCompatActivity {
         window.setStatusBarColor(this.getResources().getColor(R.color.stausbarcolor));
 
         String android_device_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        try {
-            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
-            Object value = applicationInfo.metaData.get("apikey");
-            if (value != null) {
-                API_KEY = value.toString();
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Toast.makeText(MainActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
-        }
+//        try {
+//            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
+//            Object value = applicationInfo.metaData.get("apikey");
+//            if (value != null) {
+//                API_KEY = value.toString();
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            Toast.makeText(MainActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+//        }
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference= firebaseDatabase.getReference(android_device_id);
 

@@ -35,11 +35,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:hint="Enter username"
+            android:textColorHint="@color/white"
             app:endIconMode="clear_text"
             app:endIconTint="@color/mywacolor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/uname"
+                android:textColor="@color/white"
                 android:inputType="textPersonName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -53,11 +55,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:hint="Enter E-mail"
+            android:textColorHint="@color/white"
             app:endIconMode="clear_text"
             app:endIconTint="@color/mywacolor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/mailfield"
+                android:textColor="@color/white"
                 android:inputType="textEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -70,11 +74,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:hint="Enter Password"
+            android:textColorHint="@color/white"
             app:endIconMode="password_toggle"
             app:endIconTint="@color/mywacolor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passfield"
+                android:textColor="@color/white"
                 android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -95,18 +101,19 @@
 
         <Button
             android:id="@+id/sup"
-            android:layout_width="150dp"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:layout_weight="1"
-            style="@style/Widget.Material3.Button.ElevatedButton"
             android:padding="15dp"
             android:text="Sign up"
-            android:textColor="#6F59A9"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:backgroundTint="#165180"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -119,14 +126,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
-                android:backgroundTint="#D3C4C4"
+                android:backgroundTint="@color/white"
                 android:drawableLeft="@drawable/google"
                 android:padding="15dp"
                 android:text="Google"
-                android:textColor="#0C0B0B"
+                android:textColor="@color/black"
                 android:textStyle="bold"
                 app:cornerRadius="5dp"
-                tools:ignore="VisualLintButtonSize"
                 style="?android:attr/buttonBarButtonStyle" />
 
             <Button
@@ -140,7 +146,7 @@
                 android:drawableLeft="@drawable/facebook"
                 android:padding="15dp"
                 android:text="Facebook"
-                android:textColor="#0C0B0B"
+                android:textColor="@color/white"
                 android:textStyle="bold"
                 app:cornerRadius="5dp"
                 style="?android:attr/buttonBarButtonStyle" />

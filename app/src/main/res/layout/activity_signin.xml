@@ -34,11 +34,13 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="10dp"
             android:hint="Enter E-mail"
+            android:textColorHint="@color/white"
             app:endIconMode="clear_text"
             app:endIconTint="@color/mywacolor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/gmailfield"
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress" />
@@ -51,11 +53,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:hint="Enter Password"
+            android:textColorHint="@color/white"
             app:endIconMode="password_toggle"
             app:endIconTint="@color/mywacolor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/signinpass"
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />
@@ -78,10 +82,10 @@
         <Button
             android:id="@+id/signinbtn"
             style="@style/Widget.Material3.Button.ElevatedButton"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:layout_weight="1"
             android:backgroundTint="#165180"
@@ -103,14 +107,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
-                android:backgroundTint="#D3C4C4"
+                android:backgroundTint="@color/white"
                 android:drawableLeft="@drawable/google"
                 android:padding="15dp"
                 android:text="Google"
                 android:textColor="#0C0B0B"
                 android:textStyle="bold"
-                app:cornerRadius="5dp"
-                tools:ignore="VisualLintButtonSize" />
+                app:cornerRadius="5dp" />
 
             <Button
                 android:id="@+id/fbin"
@@ -124,6 +127,7 @@
                 android:padding="15dp"
                 android:text="Facebook"
                 android:textStyle="bold"
+                android:textColor="@color/white"
                 app:cornerRadius="5dp" />
         </LinearLayout>
 

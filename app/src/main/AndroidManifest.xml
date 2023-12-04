@@ -36,13 +36,13 @@
             android:name=".MainActivity"
             android:exported="true" />
 
-        <meta-data
-            android:name = "defaultwebclientidValue"
-            android:value = "${default_web_client_id}"/>
+<!--        <meta-data-->
+<!--            android:name = "defaultwebclientidValue"-->
+<!--            android:value = "${default_web_client_id}"/>-->
 
-        <meta-data
-            android:name = "apikey"
-            android:value = "${API_KEY}"/>
+<!--        <meta-data-->
+<!--            android:name = "apikey"-->
+<!--            android:value = "${API_KEY}"/>-->
     </application>
 
 </manifest>
