@@ -1,5 +1,6 @@
 package com.example.sspgcek;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -96,9 +97,15 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Query can't be blank",Toast.LENGTH_SHORT).show();
                 return;
             }
-            getResult(userinput);
+            if (userinput.equals("signout")) {
+                firebaseAuth.signOut();
+                startActivity(new Intent(MainActivity.this, SigninActivity.class));
+                finish();
+            } else {
+                getResult(userinput);
 //            translateText(userinput);
-            binding.userquery.setText("");
+                binding.userquery.setText("");
+            }
         });
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -150,5 +157,4 @@ public class MainActivity extends AppCompatActivity {
         String withoutPunctuation = sentence.replaceAll("[^a-zA-Z0-9\\s]", "");
         getResult(withoutPunctuation.toLowerCase());
     }
-
 }
