@@ -17,14 +17,19 @@ import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.example.sspgcek.Adapters.ChatAdapter;
 import com.example.sspgcek.Models.ChatsModel;
+import com.example.sspgcek.Models.MessageModel;
 import com.example.sspgcek.databinding.ActivityMainBinding;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     ChatAdapter chatAdapter;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+    FirebaseAuth firebaseAuth;
     String API_KEY="";
 
     @Override
@@ -45,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(this.getResources().getColor(R.color.stausbarcolor));
-
-        String android_device_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 //        try {
 //            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
 //            Object value = applicationInfo.metaData.get("apikey");
@@ -56,8 +60,11 @@ public class MainActivity extends AppCompatActivity {
 //        } catch (PackageManager.NameNotFoundException e) {
 //            Toast.makeText(MainActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
 //        }
+        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+        firebaseAuth=FirebaseAuth.getInstance();
+        String id= Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
         firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReference= firebaseDatabase.getReference(android_device_id);
+        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
 
         if (! Python.isStarted()) {
             Python.start(new AndroidPlatform(getApplicationContext()));
@@ -71,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
         binding.chats.setAdapter(chatAdapter);
 
         binding.send.setOnClickListener(v -> {
-            String userinput=binding.userquery.getText().toString();
-            databaseReference.setValue(userinput);
+            String userinput=binding.userquery.getText().toString().trim();
             if(userinput.isEmpty()){
                 Toast.makeText(getApplicationContext(),"Query can't be blank",Toast.LENGTH_SHORT).show();
                 return;
@@ -91,12 +97,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void getResult(String userinput) {
         String USER_KEY = "user";
+        String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
         list.add(new ChatsModel(userinput, USER_KEY));
-        if(list.size()==1){
-            chatAdapter.notifyDataSetChanged();
-        } else {
-            chatAdapter.notifyItemInserted(list.size()-1);
-        }
+        chatAdapter.notifyDataSetChanged();
+        databaseReference.setValue(new MessageModel(userinput,USER_KEY,time));
+//        if(list.size()==1){
+//            chatAdapter.notifyDataSetChanged();
+//        } else {
+//            chatAdapter.notifyItemInserted(list.size()-1);
+//        }
         Python python=Python.getInstance();
         final PyObject pyObject=python.getModule("res");
 
@@ -107,11 +116,13 @@ public class MainActivity extends AppCompatActivity {
 
         String BOT_KEY = "bot";
         list.add(new ChatsModel(object.toString(), BOT_KEY));
-        if(list.size()==1){
-            chatAdapter.notifyDataSetChanged();
-        } else {
-            chatAdapter.notifyItemInserted(list.size()-1);
-        }
+        chatAdapter.notifyDataSetChanged();
+        databaseReference.setValue(new MessageModel(object.toString(),BOT_KEY,time));
+//        if(list.size()==1){
+//            chatAdapter.notifyDataSetChanged();
+//        } else {
+//            chatAdapter.notifyItemInserted(list.size()-1);
+//        }
     }
 
     private void translateText(String input){
