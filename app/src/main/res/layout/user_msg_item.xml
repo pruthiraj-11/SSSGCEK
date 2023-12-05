@@ -39,6 +39,7 @@
             android:maxWidth="270dp"
             android:minWidth="50dp"
             android:text="User message"
+            android:textSize="18sp"
             android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@+id/sendtime"
             app:layout_constraintEnd_toStartOf="@id/guideline2"
@@ -54,7 +55,7 @@
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
             android:text="7.47 PM"
-            android:textSize="14sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideline2"
             android:textColor="@color/white" />

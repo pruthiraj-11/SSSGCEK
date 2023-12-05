@@ -1,27 +1,39 @@
 package com.example.sspgcek.Models;
 
 public class ChatsModel {
-    String message;
-    String sender;
+    String msg;
+    String MSG_TYPE;
+    String sentTime;
 
-    public ChatsModel(String message, String sender) {
-        this.message = message;
-        this.sender = sender;
+    public ChatsModel() {
     }
 
-    public String getMessage() {
-        return message;
+    public ChatsModel(String msg, String MSG_TYPE, String sentTime) {
+        this.msg = msg;
+        this.MSG_TYPE=MSG_TYPE;
+        this.sentTime=sentTime;
+    }
+    public ChatsModel(String msg, String MSG_TYPE) {
+        this.msg = msg;
+        this.MSG_TYPE=MSG_TYPE;
+    }
+    public String getSentTime() {
+        return sentTime;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setSentTime(String sentTime) {
+        this.sentTime = sentTime;
     }
-
-    public String getSender() {
-        return sender;
+    public String getMSG_TYPE() {
+        return MSG_TYPE;
     }
-
-    public void setSender(String sender) {
-        this.sender = sender;
+    public void setMSG_TYPE(String MSG_TYPE) {
+        this.MSG_TYPE = MSG_TYPE;
+    }
+    public String getMsg() {
+        return msg;
+    }
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }

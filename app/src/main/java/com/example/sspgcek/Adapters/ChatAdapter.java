@@ -41,12 +41,13 @@ public class ChatAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatsModel chatsModel=list.get(position);
-        switch (chatsModel.getSender()){
+        switch (chatsModel.getMSG_TYPE()){
             case "user":
-                ((UserViewHolder)holder).textView.setText(chatsModel.getMessage());
+                ((UserViewHolder)holder).textView.setText(chatsModel.getMsg());
+                ((UserViewHolder)holder).textView2.setText(chatsModel.getSentTime());
                 break;
             case "bot":
-                ((BotViewHolder)holder).textView1.setText(chatsModel.getMessage());
+                ((BotViewHolder)holder).textView1.setText(chatsModel.getMsg());
                 break;
         }
     }
@@ -57,10 +58,11 @@ public class ChatAdapter extends RecyclerView.Adapter {
     }
 
     public static class UserViewHolder extends RecyclerView.ViewHolder{
-        TextView textView;
+        TextView textView,textView2;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             textView=itemView.findViewById(R.id.userinput);
+            textView2=itemView.findViewById(R.id.sendtime);
         }
     }
 

@@ -1,14 +1,12 @@
 package com.example.sspgcek;
 
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -17,14 +15,16 @@ import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.example.sspgcek.Adapters.ChatAdapter;
 import com.example.sspgcek.Models.ChatsModel;
-import com.example.sspgcek.Models.MessageModel;
 import com.example.sspgcek.databinding.ActivityMainBinding;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(this.getResources().getColor(R.color.stausbarcolor));
+        if (! Python.isStarted()) {
+            Python.start(new AndroidPlatform(getApplicationContext()));
+        }
 //        try {
 //            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
 //            Object value = applicationInfo.metaData.get("apikey");
@@ -66,17 +69,27 @@ public class MainActivity extends AppCompatActivity {
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
 
-        if (! Python.isStarted()) {
-            Python.start(new AndroidPlatform(getApplicationContext()));
-        }
-
         list=new ArrayList<>();
         chatAdapter=new ChatAdapter(list,getApplicationContext());
 
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         binding.chats.setLayoutManager(linearLayoutManager);
         binding.chats.setAdapter(chatAdapter);
+        firebaseDatabase.getReference().child("Users").child(id).child("Chats").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                list.clear();
+                for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                    ChatsModel chatsModel=dataSnapshot.getValue(ChatsModel.class);
+                    list.add(chatsModel);
+                }
+                chatAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
         binding.send.setOnClickListener(v -> {
             String userinput=binding.userquery.getText().toString().trim();
             if(userinput.isEmpty()){
@@ -98,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
     private void getResult(String userinput) {
         String USER_KEY = "user";
         String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-        list.add(new ChatsModel(userinput, USER_KEY));
+        list.add(new ChatsModel(userinput, USER_KEY,time));
         chatAdapter.notifyDataSetChanged();
-        databaseReference.setValue(new MessageModel(userinput,USER_KEY,time));
+        databaseReference.setValue(new ChatsModel(userinput,USER_KEY,time));
 //        if(list.size()==1){
 //            chatAdapter.notifyDataSetChanged();
 //        } else {
@@ -117,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         String BOT_KEY = "bot";
         list.add(new ChatsModel(object.toString(), BOT_KEY));
         chatAdapter.notifyDataSetChanged();
-        databaseReference.setValue(new MessageModel(object.toString(),BOT_KEY,time));
+        databaseReference.setValue(new ChatsModel(object.toString(),BOT_KEY));
 //        if(list.size()==1){
 //            chatAdapter.notifyDataSetChanged();
 //        } else {
