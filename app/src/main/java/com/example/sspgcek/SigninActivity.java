@@ -19,13 +19,12 @@ import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sspgcek.databinding.ActivitySigninBinding;
@@ -35,8 +34,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -50,8 +51,7 @@ public class SigninActivity extends AppCompatActivity {
     FirebaseAuth auth;
     GoogleSignInClient googleSignInClient;
     FirebaseAuth firebaseAuth;
-    EditText editTextemail;
-    TextView closeTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +67,6 @@ public class SigninActivity extends AppCompatActivity {
         animationDrawable.setExitFadeDuration(3000);
         animationDrawable.start();
 
-        closeTextView=null;
         ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -98,9 +97,7 @@ public class SigninActivity extends AppCompatActivity {
                     }
                 });
 
-        final String[] passwordResetEmail = new String[1];
-        final View[] view1 = {null};
-        String default_web_client_id="";
+//        String default_web_client_id="";
         auth=FirebaseAuth.getInstance();
         dialog=new ProgressDialog(SigninActivity.this);
         dialog.setTitle("Login");
@@ -116,9 +113,10 @@ public class SigninActivity extends AppCompatActivity {
 //        }
         GoogleSignInOptions googleSignInOptions =  new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
+                .requestProfile()
                 .requestEmail()
                 .build();
-        googleSignInClient = GoogleSignIn.getClient(SigninActivity.this, googleSignInOptions);
+        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
         binding.gin.setOnClickListener((View.OnClickListener) view -> {
             Intent intent = googleSignInClient.getSignInIntent();
             startActivityForResult(intent, 74);
@@ -160,51 +158,15 @@ public class SigninActivity extends AppCompatActivity {
         });
 
         binding.forgotpasssword.setOnClickListener(v -> {
-            if (binding.viewStub.getParent()!=null) {
-                view1[0] =binding.viewStub.inflate();
-                editTextemail= (EditText) view1[0].findViewById(R.id.mailfieldpasswordreset);
-                closeTextView= (TextView) view1[0].findViewById(R.id.backbtn);
-                passwordReset(passwordResetEmail);
-            } else {
-                binding.viewStub.setVisibility(View.VISIBLE);
-                editTextemail= (EditText) view1[0].findViewById(R.id.mailfieldpasswordreset);
-                passwordReset(passwordResetEmail);
-            }
+            startActivity(new Intent(SigninActivity.this,ForgotPasswordActivity.class));
         });
-
-        if (closeTextView!=null) {
-            binding.viewStub.setVisibility(View.GONE);
-        }
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (binding.viewStub.getVisibility()==View.VISIBLE) {
-                    binding.viewStub.setVisibility(View.GONE);
-                    finish();
-                } else {
-                    finish();
-                }
+                finish();
             }
         });
-    }
-
-    private void passwordReset(String[] passwordResetEmail){
-        passwordResetEmail[0] =editTextemail.getText().toString().trim();
-        if (TextUtils.isEmpty(passwordResetEmail[0])) {
-            Toast.makeText(getApplication(), "Please fill out this field.", Toast.LENGTH_SHORT).show();
-        } else {
-            auth.sendPasswordResetEmail(passwordResetEmail[0]).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getApplication(), "Email sent", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(getApplication(), "Failed to send reset email!", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        }
     }
 
     @Override
@@ -212,25 +174,30 @@ public class SigninActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 74) {
             Task<GoogleSignInAccount> signInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-            if (signInAccountTask.isSuccessful()) {
-                Toast.makeText(SigninActivity.this,"Sign in successful",Toast.LENGTH_SHORT).show();
                 try {
                     GoogleSignInAccount googleSignInAccount = signInAccountTask.getResult(ApiException.class);
-                    if (googleSignInAccount != null) {
-                        AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-                        firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(this, task -> {
-                            if (task.isSuccessful()) {
-                                startActivity(new Intent(SigninActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-//                                Toast.makeText(SigninActivity.this,"Firebase authentication successful", Toast.LENGTH_SHORT).show();
+                    String idToken=googleSignInAccount.getIdToken();
+                    AuthCredential authCredential=GoogleAuthProvider.getCredential(idToken,null);
+                    FirebaseAuth.getInstance().signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()){
+                                startActivity(new Intent(getApplicationContext(),MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                finish();
                             } else {
-                                Toast.makeText(SigninActivity.this,"Authentication Failed :" + Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SigninActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        });
-                    }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(SigninActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } catch (ApiException e) {
+                    Log.e("fb", Objects.requireNonNull(e.getLocalizedMessage()));
                     e.printStackTrace();
                 }
-            }
         }
     }
 

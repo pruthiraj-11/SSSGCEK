@@ -57,5 +57,4 @@
         app:layout_constraintStart_toEndOf="@+id/userquery"
         app:layout_constraintTop_toBottomOf="@+id/chats" />
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>

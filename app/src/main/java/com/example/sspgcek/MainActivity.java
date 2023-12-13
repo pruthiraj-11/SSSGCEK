@@ -1,6 +1,7 @@
 package com.example.sspgcek;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     FirebaseAuth firebaseAuth;
+    private long pressedTime;
     String API_KEY="";
 
     @Override
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(this.getResources().getColor(R.color.stausbarcolor));
+        window.setStatusBarColor(Color.parseColor("#36c5fe"));
         if (! Python.isStarted()) {
             Python.start(new AndroidPlatform(getApplicationContext()));
         }
@@ -110,7 +112,12 @@ public class MainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                finish();
+                if (pressedTime + 2000 > System.currentTimeMillis()) {
+                    finish();
+                } else {
+                    Toast.makeText(MainActivity.this, "Press back again to exit.", Toast.LENGTH_SHORT).show();
+                }
+                pressedTime = System.currentTimeMillis();
             }
         });
     }
