@@ -1,20 +1,9 @@
 package com.example.sspgcek;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
@@ -26,6 +15,15 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sspgcek.databinding.ActivitySigninBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -49,7 +47,7 @@ public class SigninActivity extends AppCompatActivity {
     ActivitySigninBinding binding;
     ProgressDialog dialog;
     FirebaseAuth auth;
-    GoogleSignInClient googleSignInClient;
+    GoogleSignInClient gsic;
     FirebaseAuth firebaseAuth;
 
     @Override
@@ -74,51 +72,46 @@ public class SigninActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
                             Task<GoogleSignInAccount> signInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-                            if (signInAccountTask.isSuccessful()) {
-                                Toast.makeText(SigninActivity.this,"Sign in successful",Toast.LENGTH_SHORT).show();
-                                try {
-                                    GoogleSignInAccount googleSignInAccount = signInAccountTask.getResult(ApiException.class);
-                                    if (googleSignInAccount != null) {
-                                        AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-                                        firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(SigninActivity.this, task -> {
-                                            if (task.isSuccessful()) {
-                                                startActivity(new Intent(SigninActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-//                                                Toast.makeText(SigninActivity.this,"Firebase authentication successful", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Toast.makeText(SigninActivity.this,"Authentication Failed :" + Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                            try {
+                                GoogleSignInAccount googleSignInAccount = signInAccountTask.getResult(ApiException.class);
+                                String idToken=googleSignInAccount.getIdToken();
+                                AuthCredential authCredential=GoogleAuthProvider.getCredential(idToken,null);
+                                FirebaseAuth.getInstance().signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()){
+                                            startActivity(new Intent(getApplicationContext(),MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                            finish();
+                                        } else {
+                                            Toast.makeText(SigninActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                } catch (ApiException e) {
-                                    e.printStackTrace();
-                                }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(SigninActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } catch (ApiException e) {
+                                Log.e("fb", Objects.requireNonNull(e.getLocalizedMessage()));
+                                e.printStackTrace();
                             }
                         }
                     }
                 });
 
-//        String default_web_client_id="";
         auth=FirebaseAuth.getInstance();
         dialog=new ProgressDialog(SigninActivity.this);
         dialog.setTitle("Login");
         dialog.setMessage("Login to your account");
-//        try {
-//            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
-//            Object value = applicationInfo.metaData.get("defaultwebclientidValue");
-//            if (value != null) {
-//                default_web_client_id = value.toString();
-//            }
-//        } catch (PackageManager.NameNotFoundException e) {
-//            Toast.makeText(SigninActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
-//        }
         GoogleSignInOptions googleSignInOptions =  new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestProfile()
                 .requestEmail()
                 .build();
-        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+        gsic = GoogleSignIn.getClient(SigninActivity.this, googleSignInOptions);
         binding.gin.setOnClickListener((View.OnClickListener) view -> {
-            Intent intent = googleSignInClient.getSignInIntent();
+            Intent intent = gsic.getSignInIntent();
             startActivityForResult(intent, 74);
 //            activityResultLauncher.launch(intent);
         });
