@@ -65,8 +65,7 @@ public class SigninActivity extends AppCompatActivity {
         animationDrawable.setExitFadeDuration(3000);
         animationDrawable.start();
 
-        ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
+        ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
@@ -110,7 +109,7 @@ public class SigninActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
         gsic = GoogleSignIn.getClient(SigninActivity.this, googleSignInOptions);
-        binding.gin.setOnClickListener((View.OnClickListener) view -> {
+        binding.gin.setOnClickListener(view -> {
             Intent intent = gsic.getSignInIntent();
             startActivityForResult(intent, 74);
 //            activityResultLauncher.launch(intent);
@@ -118,7 +117,7 @@ public class SigninActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null) {
-            startActivity(new Intent(SigninActivity.this,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            startActivity(new Intent(SigninActivity.this,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
         }
 

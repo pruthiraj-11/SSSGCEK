@@ -21,7 +21,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startActivity(new Intent(SplashActivity.this, SigninActivity.class));
+            startActivity(new Intent(SplashActivity.this, SigninActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
         }, 2000);
     }
