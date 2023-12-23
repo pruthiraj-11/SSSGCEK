@@ -117,8 +117,7 @@ public class SigninActivity extends AppCompatActivity {
                     if (result.getResultCode() == Activity.RESULT_OK) {
 
                     }
-                }
-        );
+                });
 
         auth=FirebaseAuth.getInstance();
         dialog=new ProgressDialog(SigninActivity.this);
