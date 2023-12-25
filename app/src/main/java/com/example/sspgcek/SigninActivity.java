@@ -271,7 +271,7 @@ public class SigninActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(getApplicationContext(), "Permission required to make app function properly.", Toast.LENGTH_SHORT).show();
                     }
-                }).setNeutralButton("Cancel", (dialog, which) -> dialog.dismiss());
+                }).setNeutralButton("Cancel", (dialog, which) -> dialog.dismiss()).show();
     }
 
     @Override
