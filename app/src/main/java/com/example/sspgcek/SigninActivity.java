@@ -3,6 +3,7 @@ package com.example.sspgcek;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
@@ -37,6 +38,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -239,19 +241,37 @@ public class SigninActivity extends AppCompatActivity {
     }
 
     private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(SigninActivity.this);
-        builder.setCancelable(false);
-        builder.setTitle("Need Permissions");
-        builder.setMessage("This app needs permission to use this feature. You can grant them in app settings.");
-        builder.setPositiveButton("Goto Settings", (dialog, which) -> {
-            dialog.cancel();
-            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            Uri uri = Uri.fromParts("package", getPackageName(), null);
-            intent.setData(uri);
-            settingsLauncher.launch(intent);
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        builder.show();
+//        AlertDialog.Builder builder = new AlertDialog.Builder(SigninActivity.this);
+//        builder.setCancelable(false);
+//        builder.setTitle("Need Permissions");
+//        builder.setMessage("This app needs permission to use this feature. You can grant them in app settings.");
+//        builder.setPositiveButton("Goto Settings", (dialog, which) -> {
+//            dialog.cancel();
+//            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//            Uri uri = Uri.fromParts("package", getPackageName(), null);
+//            intent.setData(uri);
+//            settingsLauncher.launch(intent);
+//        });
+//        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+//        builder.show();
+        new MaterialAlertDialogBuilder(getApplicationContext())
+                .setTitle("Need Permissions")
+                .setMessage("This app needs permission to use this feature. You can grant them in app settings.")
+                .setPositiveButton("Goto Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        settingsLauncher.launch(intent);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getApplicationContext(), "Permission required to make app function properly.", Toast.LENGTH_SHORT).show();
+                    }
+                }).setNeutralButton("Cancel", (dialog, which) -> dialog.dismiss());
     }
 
     @Override
