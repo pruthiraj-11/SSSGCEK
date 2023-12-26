@@ -18,6 +18,9 @@
         android:theme="@style/Theme.SSPGCEK"
         tools:targetApi="31">
         <activity
+            android:name=".DownloadActivity"
+            android:exported="false" />
+        <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false" />
         <activity

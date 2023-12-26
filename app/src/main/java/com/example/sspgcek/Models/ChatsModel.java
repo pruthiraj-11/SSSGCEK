@@ -13,10 +13,6 @@ public class ChatsModel {
         this.MSG_TYPE=MSG_TYPE;
         this.sentTime=sentTime;
     }
-    public ChatsModel(String msg, String MSG_TYPE) {
-        this.msg = msg;
-        this.MSG_TYPE=MSG_TYPE;
-    }
     public String getSentTime() {
         return sentTime;
     }

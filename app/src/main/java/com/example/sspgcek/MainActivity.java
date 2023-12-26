@@ -57,15 +57,6 @@ public class MainActivity extends AppCompatActivity {
         if (! Python.isStarted()) {
             Python.start(new AndroidPlatform(getApplicationContext()));
         }
-//        try {
-//            ApplicationInfo applicationInfo=getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
-//            Object value = applicationInfo.metaData.get("apikey");
-//            if (value != null) {
-//                API_KEY = value.toString();
-//            }
-//        } catch (PackageManager.NameNotFoundException e) {
-//            Toast.makeText(MainActivity.this, e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
-//        }
         String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
         firebaseAuth=FirebaseAuth.getInstance();
         String id= Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
@@ -142,9 +133,10 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
 
         String BOT_KEY = "bot";
-        list.add(new ChatsModel(object.toString(), BOT_KEY));
+        String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
+        list.add(new ChatsModel(object.toString(), BOT_KEY,time1));
         chatAdapter.notifyDataSetChanged();
-        databaseReference.setValue(new ChatsModel(object.toString(),BOT_KEY));
+        databaseReference.setValue(new ChatsModel(object.toString(),BOT_KEY,time1));
 //        if(list.size()==1){
 //            chatAdapter.notifyDataSetChanged();
 //        } else {

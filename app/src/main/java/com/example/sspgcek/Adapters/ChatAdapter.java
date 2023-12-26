@@ -48,6 +48,7 @@ public class ChatAdapter extends RecyclerView.Adapter {
                 break;
             case "bot":
                 ((BotViewHolder)holder).textView1.setText(chatsModel.getMsg());
+                ((BotViewHolder)holder).textView2.setText(chatsModel.getSentTime());
                 break;
         }
     }
@@ -67,10 +68,11 @@ public class ChatAdapter extends RecyclerView.Adapter {
     }
 
     public static class BotViewHolder extends RecyclerView.ViewHolder{
-        TextView textView1;
+        TextView textView1,textView2;
         public BotViewHolder(@NonNull View itemView) {
             super(itemView);
             textView1=itemView.findViewById(R.id.botresponse);
+            textView2=itemView.findViewById(R.id.bottime);
         }
     }
 }
