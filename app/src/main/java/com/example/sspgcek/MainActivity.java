@@ -2,6 +2,7 @@ package com.example.sspgcek;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -94,6 +95,13 @@ public class MainActivity extends AppCompatActivity {
                 firebaseAuth.signOut();
                 startActivity(new Intent(MainActivity.this, SigninActivity.class));
                 finish();
+            } else if (userinput.equals("କଲେଜ ୱେବସାଇଟ୍")) {
+                String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
+                list.add(new ChatsModel(userinput, "user",time));
+                chatAdapter.notifyDataSetChanged();
+                databaseReference.setValue(new ChatsModel(userinput,"user",time));
+                Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.gcekbpatna.ac.in/"));
+                startActivity(urlIntent);
             } else {
                 getResult(userinput);
 //            translateText(userinput);
