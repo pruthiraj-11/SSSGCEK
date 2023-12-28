@@ -32,11 +32,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         binding=ActivityForgotPasswordBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         binding.passwordresetbtn.setOnClickListener(v -> {
             if (TextUtils.isEmpty(Objects.requireNonNull(binding.mailfieldpasswordreset.getText()).toString().trim())) {
                 binding.mailfieldpasswordreset.setError("Please fill out this field.");

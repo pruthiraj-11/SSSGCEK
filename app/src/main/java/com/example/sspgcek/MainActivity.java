@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(Color.parseColor("#36c5fe"));
-        if (! Python.isStarted()) {
-            Python.start(new AndroidPlatform(getApplicationContext()));
-        }
+//        if (! Python.isStarted()) {
+//            Python.start(new AndroidPlatform(getApplicationContext()));
+//        }
         String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
         firebaseAuth=FirebaseAuth.getInstance();
         String id= Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
@@ -81,9 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 chatAdapter.notifyDataSetChanged();
             }
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
         binding.send.setOnClickListener(v -> {
             String userinput=binding.userquery.getText().toString().trim();

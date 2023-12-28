@@ -4,11 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class DownloadActivity extends AppCompatActivity {
+import com.example.sspgcek.databinding.ActivityDownloadBinding;
 
+public class DownloadActivity extends AppCompatActivity {
+    ActivityDownloadBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_download);
+        binding=ActivityDownloadBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
     }
 }
