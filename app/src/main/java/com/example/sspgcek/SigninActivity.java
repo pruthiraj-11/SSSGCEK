@@ -68,9 +68,7 @@ public class SigninActivity extends AppCompatActivity {
         binding= ActivitySigninBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         AnimationDrawable animationDrawable = (AnimationDrawable)binding.signinlayout.getBackground();
         animationDrawable.setEnterFadeDuration(1500);
@@ -78,7 +76,6 @@ public class SigninActivity extends AppCompatActivity {
         animationDrawable.start();
 
         requestPermissions();
-
         ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
@@ -113,14 +110,11 @@ public class SigninActivity extends AppCompatActivity {
                     }
                 });
 
-        settingsLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
+        settingsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
 
                     }
                 });
-
         auth=FirebaseAuth.getInstance();
         dialog=new ProgressDialog(SigninActivity.this);
         dialog.setTitle("Login");
