@@ -13,9 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
 import com.example.sspgcek.Adapters.ChatAdapter;
 import com.example.sspgcek.Models.ChatsModel;
 import com.example.sspgcek.databinding.ActivityMainBinding;
@@ -29,9 +34,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     private long pressedTime;
     String API_KEY="";
+    String url = "https://campusx-student-app.herokuapp.com/predict";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,10 +148,37 @@ public class MainActivity extends AppCompatActivity {
         object=pyObject.callAttr("backend",userinput);
 
         Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
+        final String[] data = {""};
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            data[0] = jsonObject.getString("response");
+                        } catch (JSONException e) {
+                            data[0] = e.getMessage();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String,String>();
+                params.put("predict",userinput);
+                return params;
+            }
+
+        };
+        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+        queue.add(stringRequest);
 
         String BOT_KEY = "bot";
         String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-        list.add(new ChatsModel(object.toString(), BOT_KEY,time1));
+        list.add(new ChatsModel(data[0], BOT_KEY,time1));
         chatAdapter.notifyDataSetChanged();
         databaseReference.setValue(new ChatsModel(object.toString(),BOT_KEY,time1));
 //        if(list.size()==1){
