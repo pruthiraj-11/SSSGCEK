@@ -1,18 +1,25 @@
 package com.example.sspgcek.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sspgcek.Models.ChatsModel;
 import com.example.sspgcek.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ChatAdapter extends RecyclerView.Adapter {
 
@@ -58,16 +65,6 @@ public class ChatAdapter extends RecyclerView.Adapter {
             ((BotViewHolder)holder).textView1.setText(chatsModel.getMsg());
             ((BotViewHolder)holder).textView2.setText(chatsModel.getSentTime());
         }
-//        switch (chatsModel.getMSG_TYPE()){
-//            case "user":
-//                ((UserViewHolder)holder).textView.setText(chatsModel.getMsg());
-//                ((UserViewHolder)holder).textView2.setText(chatsModel.getSentTime());
-//                break;
-//            case "bot":
-//                ((BotViewHolder)holder).textView1.setText(chatsModel.getMsg());
-//                ((BotViewHolder)holder).textView2.setText(chatsModel.getSentTime());
-//                break;
-//        }
     }
 
     @Override
@@ -75,21 +72,61 @@ public class ChatAdapter extends RecyclerView.Adapter {
         return list.size();
     }
 
-    public static class UserViewHolder extends RecyclerView.ViewHolder{
+    public static class UserViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
         TextView senderMsg,senderTime;
+        RelativeLayout relativeLayout;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
+//            itemView.setLongClickable(true);
             senderMsg=itemView.findViewById(R.id.userinput);
             senderTime=itemView.findViewById(R.id.sendtime);
+            relativeLayout=itemView.findViewById(R.id.cardView2);
+            relativeLayout.setOnCreateContextMenuListener(this);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.setHeaderTitle("Select any one");
+            menu.add(getAdapterPosition(),102,0,"Delete");
         }
     }
 
-    public static class BotViewHolder extends RecyclerView.ViewHolder{
+    public static class BotViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
         TextView textView1,textView2;
+        ConstraintLayout constraintLayout;
         public BotViewHolder(@NonNull View itemView) {
             super(itemView);
+//            itemView.setLongClickable(true);
             textView1=itemView.findViewById(R.id.botresponse);
             textView2=itemView.findViewById(R.id.bottime);
+            constraintLayout=itemView.findViewById(R.id.cardView);
+            constraintLayout.setOnCreateContextMenuListener(this);
         }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.setHeaderTitle("Select any one");
+            menu.add(getAdapterPosition(),101,0,"Share");
+            menu.add(getAdapterPosition(),102,1,"Delete");
+        }
+    }
+
+    public void removeItem(int position) {
+        String msgid= list.get(position).getMsgid();
+        list.remove(position);
+        notifyItemRemoved(position);
+        FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        String id= Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
+        database.getReference().child("Users").child(id).child("Chats").child(msgid).setValue(null);
+    }
+
+    public void shareText(int position) {
+        String sharebody = list.get(position).getMsg();
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Subject Here");
+        intent.putExtra(Intent.EXTRA_TEXT, sharebody);
+        context.startActivity(Intent.createChooser(intent, "Share text via").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 }

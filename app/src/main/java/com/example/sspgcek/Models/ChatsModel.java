@@ -4,19 +4,20 @@ public class ChatsModel {
     String msg;
     String MSG_TYPE;
     String sentTime;
+    String msgid;
 
     public ChatsModel() {
     }
-
-    public ChatsModel(String msg, String MSG_TYPE, String sentTime) {
+    public ChatsModel(String msg, String MSG_TYPE, String sentTime,String msgid) {
         this.msg = msg;
         this.MSG_TYPE=MSG_TYPE;
         this.sentTime=sentTime;
+        this.msgid=msgid;
     }
+
     public String getSentTime() {
         return sentTime;
     }
-
     public void setSentTime(String sentTime) {
         this.sentTime = sentTime;
     }
@@ -31,5 +32,11 @@ public class ChatsModel {
     }
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+    public String getMsgid() {
+        return msgid;
+    }
+    public void setMsgid(String msgid) {
+        this.msgid = msgid;
     }
 }

@@ -1,9 +1,17 @@
 package com.example.sspgcek;
 
+import static java.security.AccessController.getContext;
+
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -11,6 +19,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.Request;
@@ -22,6 +31,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.sspgcek.Adapters.ChatAdapter;
 import com.example.sspgcek.Models.ChatsModel;
 import com.example.sspgcek.databinding.ActivityMainBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
@@ -65,11 +75,14 @@ public class MainActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(Color.parseColor("#36c5fe"));
-//        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+
+        setSupportActionBar(binding.toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Student Support System(GCEK)");
+
+        registerForContextMenu(binding.chats);
         firebaseAuth=FirebaseAuth.getInstance();
         id= Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
         firebaseDatabase=FirebaseDatabase.getInstance();
-//        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
 
         list=new ArrayList<>();
         chatAdapter=new ChatAdapter(list,getApplicationContext());
@@ -96,24 +109,21 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Query can't be blank",Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (userinput.equals("signout")) {
-                firebaseAuth.signOut();
-                startActivity(new Intent(MainActivity.this, SigninActivity.class));
-                finish();
-            } else if (userinput.equals("କଲେଜ ୱେବସାଇଟ୍")) {
+            if (userinput.equals("କଲେଜ ୱେବସାଇଟ୍")) {
                 String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-                list.add(new ChatsModel(userinput, "user",time));
-                chatAdapter.notifyDataSetChanged();
                 String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+                list.add(new ChatsModel(userinput, "user",time,name));
+                chatAdapter.notifyItemInserted(list.size()-1);
+                binding.chats.scrollToPosition(list.size()-1);
                 databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-                databaseReference.setValue(new ChatsModel(userinput,"user",time));
+                databaseReference.setValue(new ChatsModel(userinput,"user",time,name));
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.gcekbpatna.ac.in/"));
                 startActivity(urlIntent);
             } else {
 //                String translateduserinput=translateText(userinput);
                 getResult(userinput);
-                binding.userquery.setText("");
             }
+            binding.userquery.setText("");
         });
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -133,15 +143,11 @@ public class MainActivity extends AppCompatActivity {
         String BOT_KEY = "bot";
         String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
         String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-        list.add(new ChatsModel(userinput, USER_KEY,time));
-        chatAdapter.notifyDataSetChanged();
+        list.add(new ChatsModel(userinput, USER_KEY,time,name));
+        chatAdapter.notifyItemInserted(list.size()-1);
+        binding.chats.scrollToPosition(list.size()-1);
         databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-        databaseReference.setValue(new ChatsModel(userinput,USER_KEY,time));
-//        if(list.size()==1){
-//            chatAdapter.notifyDataSetChanged();
-//        } else {
-//            chatAdapter.notifyItemInserted(list.size()-1);
-//        }
+        databaseReference.setValue(new ChatsModel(userinput,USER_KEY,time,name));
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -150,15 +156,15 @@ public class MainActivity extends AppCompatActivity {
                             String response1 = jsonObject.getString("response");
                             String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
                             String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-                            list.add(new ChatsModel(response1, BOT_KEY,time1));
+                            list.add(new ChatsModel(response1, BOT_KEY,time1,name));
                             databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-                            databaseReference.setValue(new ChatsModel(response1,BOT_KEY,time1));
+                            databaseReference.setValue(new ChatsModel(response1,BOT_KEY,time1,name));
                         } catch (JSONException e) {
                             String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
                             String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-                            list.add(new ChatsModel(e.getMessage(), BOT_KEY,time1));
+                            list.add(new ChatsModel(e.getMessage(), BOT_KEY,time1,name));
                             databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-                            databaseReference.setValue(new ChatsModel(e.getMessage(),BOT_KEY,time1));
+                            databaseReference.setValue(new ChatsModel(e.getMessage(),BOT_KEY,time1,name));
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -166,9 +172,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
                         String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-                        list.add(new ChatsModel(error.getMessage(), BOT_KEY,time1));
+                        list.add(new ChatsModel("Server error.", BOT_KEY,time1,name));
                         databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-                        databaseReference.setValue(new ChatsModel(error.getMessage(),BOT_KEY,time1));
+                        databaseReference.setValue(new ChatsModel("Server error.",BOT_KEY,time1,name));
 //                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }){
@@ -182,12 +188,8 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
         queue.add(stringRequest);
 
-        chatAdapter.notifyDataSetChanged();
-//        if(list.size()==1){
-//            chatAdapter.notifyDataSetChanged();
-//        } else {
-//            chatAdapter.notifyItemInserted(list.size()-1);
-//        }
+        chatAdapter.notifyItemInserted(list.size()-1);
+        binding.chats.scrollToPosition(list.size()-1);
     }
 
     private String translateText(String input){
@@ -197,6 +199,38 @@ public class MainActivity extends AppCompatActivity {
         return translation.getTranslatedText();
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()==R.id.signout) {
+            firebaseAuth.signOut();
+            startActivity(new Intent(MainActivity.this, SigninActivity.class));
+            finish();
+        } else if (item.getItemId()==R.id.download) {
+            startActivity(new Intent(MainActivity.this, DownloadActivity.class));
+        }
+        return (super.onOptionsItemSelected(item));
+    }
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        if (Objects.equals(item.getTitle(), "Share")) {
+            chatAdapter.shareText(item.getGroupId());
+//            Toast.makeText(MainActivity.this, "Chat Shared", Toast.LENGTH_SHORT).show();
+        } else if (Objects.equals(item.getTitle(), "Delete")) {
+            new MaterialAlertDialogBuilder(MainActivity.this)
+                    .setMessage("Delete message?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            chatAdapter.removeItem(item.getGroupId());
+                            Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+                        }
+                    }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).show();
+        }
+        return super.onContextItemSelected(item);
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
