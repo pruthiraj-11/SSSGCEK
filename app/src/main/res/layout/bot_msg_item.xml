@@ -41,7 +41,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="3dp"
         android:text="7.47 PM"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:textColor="@color/white" />

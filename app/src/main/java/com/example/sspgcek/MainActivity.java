@@ -19,8 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
 import com.example.sspgcek.Adapters.ChatAdapter;
 import com.example.sspgcek.Models.ChatsModel;
 import com.example.sspgcek.databinding.ActivityMainBinding;
@@ -54,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     private long pressedTime;
     String API_KEY="";
-    String url = "https://campusx-student-app.herokuapp.com/predict";
+    String id;
+    String url = "http://127.0.0.1:5000/predict/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +68,11 @@ public class MainActivity extends AppCompatActivity {
 //        if (! Python.isStarted()) {
 //            Python.start(new AndroidPlatform(getApplicationContext()));
 //        }
-        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+//        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
         firebaseAuth=FirebaseAuth.getInstance();
-        String id= Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
+        id= Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
         firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
+//        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
 
         list=new ArrayList<>();
         chatAdapter=new ChatAdapter(list,getApplicationContext());
@@ -108,12 +107,14 @@ public class MainActivity extends AppCompatActivity {
                 String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
                 list.add(new ChatsModel(userinput, "user",time));
                 chatAdapter.notifyDataSetChanged();
+                String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+                databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
                 databaseReference.setValue(new ChatsModel(userinput,"user",time));
                 Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.gcekbpatna.ac.in/"));
                 startActivity(urlIntent);
             } else {
+//                String translateduserinput=translateText(userinput);
                 getResult(userinput);
-//            translateText(userinput);
                 binding.userquery.setText("");
             }
         });
@@ -132,55 +133,66 @@ public class MainActivity extends AppCompatActivity {
 
     private void getResult(String userinput) {
         String USER_KEY = "user";
+        String BOT_KEY = "bot";
         String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
+        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
         list.add(new ChatsModel(userinput, USER_KEY,time));
         chatAdapter.notifyDataSetChanged();
+        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
         databaseReference.setValue(new ChatsModel(userinput,USER_KEY,time));
 //        if(list.size()==1){
 //            chatAdapter.notifyDataSetChanged();
 //        } else {
 //            chatAdapter.notifyItemInserted(list.size()-1);
 //        }
-        Python python=Python.getInstance();
-        final PyObject pyObject=python.getModule("res");
-
-        PyObject object=null;
-        object=pyObject.callAttr("backend",userinput);
-
-        Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
-        final String[] data = {""};
+//        Python python=Python.getInstance();
+//        final PyObject pyObject=python.getModule("res");
+//
+//        PyObject object=null;
+//        object=pyObject.callAttr("backend",userinput);
+//
+//        Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            data[0] = jsonObject.getString("response");
+                            String response1 = jsonObject.getString("response");
+                            String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
+                            String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+                            list.add(new ChatsModel(response1, BOT_KEY,time1));
+                            databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
+                            databaseReference.setValue(new ChatsModel(response1,BOT_KEY,time1));
                         } catch (JSONException e) {
-                            data[0] = e.getMessage();
+                            String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
+                            String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+                            list.add(new ChatsModel(e.getMessage(), BOT_KEY,time1));
+                            databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
+                            databaseReference.setValue(new ChatsModel(e.getMessage(),BOT_KEY,time1));
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
+                        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+                        list.add(new ChatsModel(error.getMessage(), BOT_KEY,time1));
+                        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
+                        databaseReference.setValue(new ChatsModel(error.getMessage(),BOT_KEY,time1));
+//                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }){
             @Override
             protected Map<String,String> getParams(){
                 Map<String,String> params = new HashMap<String,String>();
-                params.put("predict",userinput);
+                params.put("input_query",userinput);
                 return params;
             }
-
         };
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
         queue.add(stringRequest);
 
-        String BOT_KEY = "bot";
-        String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-        list.add(new ChatsModel(data[0], BOT_KEY,time1));
         chatAdapter.notifyDataSetChanged();
-        databaseReference.setValue(new ChatsModel(object.toString(),BOT_KEY,time1));
 //        if(list.size()==1){
 //            chatAdapter.notifyDataSetChanged();
 //        } else {
@@ -188,16 +200,15 @@ public class MainActivity extends AppCompatActivity {
 //        }
     }
 
-    private void translateText(String input){
+    private String translateText(String input){
         String targetLang = "or";
         Translate translate = TranslateOptions.newBuilder().setApiKey(API_KEY).build().getService();
         Translation translation = translate.translate(input, Translate.TranslateOption.targetLanguage(targetLang));
-        String translatedText = translation.getTranslatedText();
-        removePunctuationAndLowercase(translatedText);
+        return translation.getTranslatedText();
     }
 
-    private void removePunctuationAndLowercase(String sentence) {
-        String withoutPunctuation = sentence.replaceAll("[^a-zA-Z0-9\\s]", "");
-        getResult(withoutPunctuation.toLowerCase());
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

@@ -28,10 +28,10 @@ public class ChatAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         switch (viewType){
-            case 0:
+            case 1:
                 view= LayoutInflater.from(parent.getContext()).inflate(R.layout.user_msg_item,parent,false);
                 return new UserViewHolder(view);
-            case 1:
+            case 2:
                 view=LayoutInflater.from(parent.getContext()).inflate(R.layout.bot_msg_item,parent,false);
                 return new BotViewHolder(view);
         }
@@ -39,18 +39,35 @@ public class ChatAdapter extends RecyclerView.Adapter {
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if(list.get(position).getMSG_TYPE().equals("user")) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatsModel chatsModel=list.get(position);
-        switch (chatsModel.getMSG_TYPE()){
-            case "user":
-                ((UserViewHolder)holder).textView.setText(chatsModel.getMsg());
-                ((UserViewHolder)holder).textView2.setText(chatsModel.getSentTime());
-                break;
-            case "bot":
-                ((BotViewHolder)holder).textView1.setText(chatsModel.getMsg());
-                ((BotViewHolder)holder).textView2.setText(chatsModel.getSentTime());
-                break;
+        if(holder.getClass()==UserViewHolder.class){
+            ((UserViewHolder)holder).senderMsg.setText(chatsModel.getMsg());
+            ((UserViewHolder)holder).senderTime.setText(chatsModel.getSentTime());
         }
+        else{
+            ((BotViewHolder)holder).textView1.setText(chatsModel.getMsg());
+            ((BotViewHolder)holder).textView2.setText(chatsModel.getSentTime());
+        }
+//        switch (chatsModel.getMSG_TYPE()){
+//            case "user":
+//                ((UserViewHolder)holder).textView.setText(chatsModel.getMsg());
+//                ((UserViewHolder)holder).textView2.setText(chatsModel.getSentTime());
+//                break;
+//            case "bot":
+//                ((BotViewHolder)holder).textView1.setText(chatsModel.getMsg());
+//                ((BotViewHolder)holder).textView2.setText(chatsModel.getSentTime());
+//                break;
+//        }
     }
 
     @Override
@@ -59,11 +76,11 @@ public class ChatAdapter extends RecyclerView.Adapter {
     }
 
     public static class UserViewHolder extends RecyclerView.ViewHolder{
-        TextView textView,textView2;
+        TextView senderMsg,senderTime;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
-            textView=itemView.findViewById(R.id.userinput);
-            textView2=itemView.findViewById(R.id.sendtime);
+            senderMsg=itemView.findViewById(R.id.userinput);
+            senderTime=itemView.findViewById(R.id.sendtime);
         }
     }
 
