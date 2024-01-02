@@ -65,9 +65,6 @@ public class MainActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(Color.parseColor("#36c5fe"));
-//        if (! Python.isStarted()) {
-//            Python.start(new AndroidPlatform(getApplicationContext()));
-//        }
 //        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
         firebaseAuth=FirebaseAuth.getInstance();
         id= Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
@@ -145,13 +142,6 @@ public class MainActivity extends AppCompatActivity {
 //        } else {
 //            chatAdapter.notifyItemInserted(list.size()-1);
 //        }
-//        Python python=Python.getInstance();
-//        final PyObject pyObject=python.getModule("res");
-//
-//        PyObject object=null;
-//        object=pyObject.callAttr("backend",userinput);
-//
-//        Toast.makeText(getApplicationContext(),object.toString(),Toast.LENGTH_LONG).show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
