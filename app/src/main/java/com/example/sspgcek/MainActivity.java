@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private long pressedTime;
     String API_KEY="";
     String id;
-    String url = "http://127.0.0.1:5000/predict/";
+    String url = "https://pruthiraj2002routray-c88477d6-455a-467f-ba6b-1c680d998cf5.socketxp.com/predict";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
