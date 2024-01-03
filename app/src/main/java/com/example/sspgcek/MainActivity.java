@@ -110,16 +110,10 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             if (userinput.equals("କଲେଜ ୱେବସାଇଟ୍")) {
-                String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-                String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-                list.add(new ChatsModel(userinput, "user",time,name));
-                chatAdapter.notifyItemInserted(list.size()-1);
-                binding.chats.scrollToPosition(list.size()-1);
-                databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-                databaseReference.setValue(new ChatsModel(userinput,"user",time,name));
-                Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.gcekbpatna.ac.in/"));
-                startActivity(urlIntent);
-            } else {
+                openURL(userinput,"https://www.gcekbpatna.ac.in/");
+            } else if (userinput.equals("ଅନଲାଇନ୍ ଦେୟ")) {
+                openURL(userinput,"https://www.gcekbpatna.ac.in/billpayment/");
+            }else {
 //                String translateduserinput=translateText(userinput);
                 getResult(userinput);
             }
@@ -141,42 +135,18 @@ public class MainActivity extends AppCompatActivity {
     private void getResult(String userinput) {
         String USER_KEY = "user";
         String BOT_KEY = "bot";
-        String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-        list.add(new ChatsModel(userinput, USER_KEY,time,name));
-        chatAdapter.notifyItemInserted(list.size()-1);
-        binding.chats.scrollToPosition(list.size()-1);
-        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-        databaseReference.setValue(new ChatsModel(userinput,USER_KEY,time,name));
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            String response1 = jsonObject.getString("response");
-                            String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-                            String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-                            list.add(new ChatsModel(response1, BOT_KEY,time1,name));
-                            databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-                            databaseReference.setValue(new ChatsModel(response1,BOT_KEY,time1,name));
-                        } catch (JSONException e) {
-                            String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-                            String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-                            list.add(new ChatsModel(e.getMessage(), BOT_KEY,time1,name));
-                            databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-                            databaseReference.setValue(new ChatsModel(e.getMessage(),BOT_KEY,time1,name));
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String time1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
-                        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
-                        list.add(new ChatsModel("Server error.", BOT_KEY,time1,name));
-                        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
-                        databaseReference.setValue(new ChatsModel("Server error.",BOT_KEY,time1,name));
+        addChat(userinput,USER_KEY);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response -> {
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String response1 = jsonObject.getString("response");
+                addChat(response1,BOT_KEY);
+            } catch (JSONException e) {
+                addChat(e.getMessage(),BOT_KEY);
+            }
+        }, error -> {
+                    addChat("Server error.",BOT_KEY);
 //                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
                 }){
             @Override
             protected Map<String,String> getParams(){
@@ -187,18 +157,33 @@ public class MainActivity extends AppCompatActivity {
         };
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
         queue.add(stringRequest);
-
+    }
+    private void addChat(String data, String msgKey){
+        String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
+        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+        list.add(new ChatsModel(data, msgKey,time,name));
         chatAdapter.notifyItemInserted(list.size()-1);
         binding.chats.scrollToPosition(list.size()-1);
+        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
+        databaseReference.setValue(new ChatsModel(data,msgKey,time,name));
     }
-
     private String translateText(String input){
         String targetLang = "or";
         Translate translate = TranslateOptions.newBuilder().setApiKey(API_KEY).build().getService();
         Translation translation = translate.translate(input, Translate.TranslateOption.targetLanguage(targetLang));
         return translation.getTranslatedText();
     }
-
+    private void openURL(String userinput,String url) {
+        String time = new SimpleDateFormat("yyyy-MM-dd-HH-mm", Locale.getDefault()).format(System.currentTimeMillis());
+        String name = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis());
+        list.add(new ChatsModel(userinput, "user",time,name));
+        chatAdapter.notifyItemInserted(list.size()-1);
+        binding.chats.scrollToPosition(list.size()-1);
+        databaseReference= firebaseDatabase.getReference().child("Users").child(id).child("Chats").child(name);
+        databaseReference.setValue(new ChatsModel(userinput,"user",time,name));
+        Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(urlIntent);
+    }
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
