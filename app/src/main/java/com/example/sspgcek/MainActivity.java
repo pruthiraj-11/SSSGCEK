@@ -1,17 +1,11 @@
 package com.example.sspgcek;
 
-import static java.security.AccessController.getContext;
-
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -19,13 +13,10 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.sspgcek.Adapters.ChatAdapter;
@@ -206,12 +197,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (Objects.equals(item.getTitle(), "Delete")) {
             new MaterialAlertDialogBuilder(MainActivity.this)
                     .setMessage("Delete message?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            chatAdapter.removeItem(item.getGroupId());
-                            Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
-                        }
+                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+                        chatAdapter.removeItem(item.getGroupId());
+                        Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
                     }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).show();
         }
         return super.onContextItemSelected(item);
