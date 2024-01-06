@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     String API_KEY="";
     String id;
     String url = "https://pruthiraj2002routray-c88477d6-455a-467f-ba6b-1c680d998cf5.socketxp.com/predict";
-
+    String feeStructureURL="https://firebasestorage.googleapis.com/v0/b/sspgcek.appspot.com/o/IMG_20240103_224134.pdf?alt=media&token=a8d23079-194c-48a5-806a-e8d8c746939c";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +104,9 @@ public class MainActivity extends AppCompatActivity {
                 openURL(userinput,"https://www.gcekbpatna.ac.in/");
             } else if (userinput.equals("ଅନଲାଇନ୍ ଦେୟ")) {
                 openURL(userinput,"https://www.gcekbpatna.ac.in/billpayment/");
-            }else {
+            } else if (userinput.equals("କଲେଜ ଅଧ୍ୟୟନ ଦେୟ ବିବରଣୀ")) {
+                new DownloadFileFromURL().execute(feeStructureURL,"/feedetails.pdf");
+            } else {
 //                String translateduserinput=translateText(userinput);
                 getResult(userinput);
             }
