@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -36,12 +40,21 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -106,6 +119,42 @@ public class MainActivity extends AppCompatActivity {
                 openURL(userinput,"https://www.gcekbpatna.ac.in/billpayment/");
             } else if (userinput.equals("କଲେଜ ଅଧ୍ୟୟନ ଦେୟ ବିବରଣୀ")) {
                 new DownloadFileFromURL().execute(feeStructureURL,"/feedetails.pdf");
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Background work here
+                        int count;
+                        try {
+                            URL url = new URL(feeStructureURL);
+                            URLConnection conection = url.openConnection();
+                            conection.connect();
+                            int lenghtOfFile = conection.getContentLength();
+                            InputStream input = new BufferedInputStream(url.openStream(), 8192);
+                            OutputStream output = Files.newOutputStream(Paths.get(Environment.getExternalStorageDirectory().toString() + feeStructureURL));
+                            byte[] data = new byte[1024];
+                            long total = 0;
+                            while ((count = input.read(data)) != -1) {
+                                total += count;
+                                output.write(data, 0, count);
+                            }
+                            output.flush();
+                            output.close();
+                            input.close();
+                        } catch (Exception e) {
+                            Log.e("Error: ", Objects.requireNonNull(e.getMessage()));
+                        }
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                //UI Thread work here
+                                Toast.makeText(MainActivity.this, "File downloaded", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(MainActivity.this, DownloadActivity.class));
+                            }
+                        });
+                    }
+                });
             } else {
 //                String translateduserinput=translateText(userinput);
                 getResult(userinput);
