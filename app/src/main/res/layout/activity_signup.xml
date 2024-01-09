@@ -20,11 +20,12 @@
 
         <ImageView
             android:layout_width="150dp"
-            android:layout_height="100dp"
+            android:layout_height="110dp"
             android:layout_gravity="center_horizontal"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:scaleType="fitXY"
-            android:src="@drawable/splashimg" />
+            android:src="@drawable/logo" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/filledTextField74"
