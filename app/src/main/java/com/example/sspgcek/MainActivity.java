@@ -156,8 +156,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             } else {
-//                String translateduserinput=translateText(userinput);
-                getResult(userinput);
+                if (userinput.matches("^[a-zA-Z][a-zA-Z\\s]+$")) {
+                    String translateduserinput=translateText(userinput);
+                    getResult(translateduserinput);
+                } else {
+                    getResult(userinput);
+                }
             }
             binding.userquery.setText("");
         });

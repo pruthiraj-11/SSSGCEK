@@ -86,7 +86,7 @@ public class ChatAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.setHeaderTitle("Select any one");
+//            menu.setHeaderTitle("Select any one");
             menu.add(getAdapterPosition(),102,0,"Delete");
         }
     }
@@ -105,7 +105,7 @@ public class ChatAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.setHeaderTitle("Select any one");
+//            menu.setHeaderTitle("Select any one");
             menu.add(getAdapterPosition(),101,0,"Share");
             menu.add(getAdapterPosition(),102,1,"Delete");
         }
