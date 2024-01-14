@@ -118,50 +118,16 @@ public class MainActivity extends AppCompatActivity {
             } else if (userinput.equals("ଅନଲାଇନ୍ ଦେୟ")) {
                 openURL(userinput,"https://www.gcekbpatna.ac.in/billpayment/");
             } else if (userinput.equals("କଲେଜ ଅଧ୍ୟୟନ ଦେୟ ବିବରଣୀ")) {
-                new DownloadFileFromURL().execute(feeStructureURL,"/feedetails.pdf");
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Handler handler = new Handler(Looper.getMainLooper());
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        //Background work here
-                        int count;
-                        try {
-                            URL url = new URL(feeStructureURL);
-                            URLConnection conection = url.openConnection();
-                            conection.connect();
-                            int lenghtOfFile = conection.getContentLength();
-                            InputStream input = new BufferedInputStream(url.openStream(), 8192);
-                            OutputStream output = Files.newOutputStream(Paths.get(Environment.getExternalStorageDirectory().toString() + feeStructureURL));
-                            byte[] data = new byte[1024];
-                            long total = 0;
-                            while ((count = input.read(data)) != -1) {
-                                total += count;
-                                output.write(data, 0, count);
-                            }
-                            output.flush();
-                            output.close();
-                            input.close();
-                        } catch (Exception e) {
-                            Log.e("Error: ", Objects.requireNonNull(e.getMessage()));
-                        }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //UI Thread work here
-                                Toast.makeText(MainActivity.this, "File downloaded", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(MainActivity.this, DownloadActivity.class));
-                            }
-                        });
-                    }
-                });
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(feeStructureURL));
+                startActivity(intent);
             } else {
-                if (userinput.matches("^[a-zA-Z][a-zA-Z\\s]+$")) {
-                    String translateduserinput=translateText(userinput);
-                    getResult(translateduserinput);
-                } else {
-                    getResult(userinput);
-                }
+//                if (userinput.matches("^[a-zA-Z][a-zA-Z\\s]+$")) {
+//                    String translateduserinput=translateText(userinput);
+//                    getResult(translateduserinput);
+//                } else {
+//                    getResult(userinput);
+//                }
+                getResult(userinput);
             }
             binding.userquery.setText("");
         });
@@ -191,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 addChat(e.getMessage(),BOT_KEY);
             }
         }, error -> {
-                    addChat("Server error.",BOT_KEY);
+                    addChat("Internal error.",BOT_KEY);
 //                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                 }){
             @Override
