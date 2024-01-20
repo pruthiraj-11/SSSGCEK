@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -196,6 +197,14 @@ public class MainActivity extends AppCompatActivity {
         Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(urlIntent);
     }
+    public void startVoiceRecognitionActivity() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Speech recognition demo");
+        startActivityForResult(intent, 74);
+    }
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
@@ -207,6 +216,8 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else if (item.getItemId()==R.id.download) {
             startActivity(new Intent(MainActivity.this, DownloadActivity.class));
+        } else if (item.getItemId()==R.id.voiceinput) {
+            //TO-DO
         }
         return (super.onOptionsItemSelected(item));
     }
