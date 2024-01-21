@@ -5,14 +5,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.speech.RecognizerIntent;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -22,7 +17,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.Request;
@@ -46,21 +40,12 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,10 +55,10 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     FirebaseAuth firebaseAuth;
+    ActivityResultLauncher<Intent> launcher;
     private long pressedTime;
     String API_KEY="";
     String id;
-    boolean flag=false;
     String url = "https://pruthiraj2002routray-c88477d6-455a-467f-ba6b-1c680d998cf5.socketxp.com/predict";
     String feeStructureURL="https://firebasestorage.googleapis.com/v0/b/sspgcek.appspot.com/o/IMG_20240103_224134.pdf?alt=media&token=a8d23079-194c-48a5-806a-e8d8c746939c";
     @Override
@@ -114,16 +99,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
-        ActivityResultLauncher<Intent> launcher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), o -> {
+        launcher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), o -> {
             if (o.getResultCode()== RESULT_OK && o.getData()!=null){
                 Intent data=o.getData();
                 String userinput=Objects.requireNonNull(Objects.requireNonNull(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS))).get(0);
 //                String translateduserinput=translateText(userinput);
+//                addChat(translateduserinput,"user");
 //                getResult(translateduserinput);
-//                addChat(userinput,"user");
-                binding.userquery.setText(userinput);
-                binding.send.setImageDrawable(AppCompatResources.getDrawable(MainActivity.this,R.drawable.baseline_send_24));
-                flag=false;
+//                binding.userquery.setText(userinput);
+                Toast.makeText(this,userinput,Toast.LENGTH_SHORT).show();
             }
         });
         binding.send.setOnClickListener(v -> {
@@ -137,9 +121,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (userinput.equals("ଅନଲାଇନ୍ ଦେୟ")) {
                 openURL(userinput,"https://www.gcekbpatna.ac.in/billpayment/");
             } else if (userinput.equals("କଲେଜ ଅଧ୍ୟୟନ ଦେୟ ବିବରଣୀ")) {
-                addChat("କଲେଜ ଅଧ୍ୟୟନ ଦେୟ ବିବରଣୀ","user");
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(feeStructureURL));
-                startActivity(intent);
+                openURL(userinput,feeStructureURL);
             } else {
 //                if (userinput.matches("^[a-zA-Z][a-zA-Z\\s]+$")) {
 //                    String translateduserinput=translateText(userinput);
@@ -151,19 +133,6 @@ public class MainActivity extends AppCompatActivity {
             }
             binding.userquery.setText("");
         });
-        if (flag) {
-            binding.send.setOnClickListener(v -> {
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-//                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak your query");
-                try {
-                    launcher.launch(intent);
-                } catch (ActivityNotFoundException e){
-                    Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -176,7 +145,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    private void speechRecognition(){
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+//                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak your query");
+        try {
+            launcher.launch(intent);
+        } catch (ActivityNotFoundException e){
+            Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
     private void getResult(String userinput) {
         String USER_KEY = "user";
         String BOT_KEY = "bot";
@@ -232,8 +211,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (item.getItemId()==R.id.download) {
             startActivity(new Intent(MainActivity.this, DownloadActivity.class));
         } else if (item.getItemId()==R.id.voiceinput) {
-            binding.send.setImageDrawable(AppCompatResources.getDrawable(MainActivity.this,R.drawable.keyboard_voice_24px));
-            flag=true;
+            speechRecognition();
         }
         return (super.onOptionsItemSelected(item));
     }
