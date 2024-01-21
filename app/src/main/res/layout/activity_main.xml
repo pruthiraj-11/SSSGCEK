@@ -65,7 +65,6 @@
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/fab_color"
         android:src="@drawable/baseline_send_24"
-        android:tint="@color/white"
         app:fabCustomSize="45dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
