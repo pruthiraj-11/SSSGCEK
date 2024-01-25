@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.sspgcek.Models.ChatsModel;
 import com.example.sspgcek.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,6 +63,8 @@ public class ChatAdapter extends RecyclerView.Adapter {
             ((UserViewHolder)holder).senderTime.setText(chatsModel.getSentTime());
         }
         else{
+            ((BotViewHolder)holder).lottieAnimationView.setVisibility(View.INVISIBLE);
+            ((BotViewHolder)holder).constraintLayout.setVisibility(View.VISIBLE);
             ((BotViewHolder)holder).textView1.setText(chatsModel.getMsg());
             ((BotViewHolder)holder).textView2.setText(chatsModel.getSentTime());
         }
@@ -94,12 +97,14 @@ public class ChatAdapter extends RecyclerView.Adapter {
     public static class BotViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
         TextView textView1,textView2;
         ConstraintLayout constraintLayout;
+        private LottieAnimationView lottieAnimationView;
         public BotViewHolder(@NonNull View itemView) {
             super(itemView);
 //            itemView.setLongClickable(true);
             textView1=itemView.findViewById(R.id.botresponse);
             textView2=itemView.findViewById(R.id.bottime);
-            constraintLayout=itemView.findViewById(R.id.cardView);
+            lottieAnimationView=itemView.findViewById(R.id.animation_view);
+            constraintLayout=itemView.findViewById(R.id.main_layout);
             constraintLayout.setOnCreateContextMenuListener(this);
         }
 
