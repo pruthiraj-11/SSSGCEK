@@ -7,11 +7,11 @@
         android:title="@string/downloads"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/signout"
-        android:title="@string/log_out"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/voiceinput"
         android:title="@string/voice_query"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/signout"
+        android:title="@string/log_out"
         app:showAsAction="never"/>
 </menu>

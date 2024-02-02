@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                     .setPositiveButton("Yes", (dialogInterface, i) -> {
                         chatAdapter.removeItem(item.getGroupId());
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
-                    }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).show();
+                    }).setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss()).setCancelable(false).show();
         }
         return super.onContextItemSelected(item);
     }

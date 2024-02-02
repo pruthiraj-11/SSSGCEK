@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="downloads">Downloads</string>
-    <string name="log_out">Log out</string>
+    <string name="log_out">Sign out</string>
     <string name="voice_query">Voice query</string>
 </resources>
